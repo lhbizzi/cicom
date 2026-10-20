@@ -1,5 +1,13 @@
 import Clientes from "../pages/cadastros/Clientes";
 import Marcas from "../pages/cadastros/Marcas";
+import Lotes from "../pages/cadastros/Lotes";
+import PecasComponentes from "../pages/cadastros/PecasComponentes";
+import Vendedores from "../pages/cadastros/Vendedores";
+import Funcionarios from "../pages/cadastros/Funcionarios";
+import TipoExtintores from "../pages/cadastros/TipoExtintores";
+import CidadesNfe from "../pages/cadastros/CidadesNfe";
+import Transportadoras from "../pages/cadastros/Transportadoras";
+import Extintores from "../pages/cadastros/Extintores";
 import Alertas from "../pages/estoque/Alertas";
 import Posicao from "../pages/estoque/Posicao";
 import Auditoria from "../pages/relatorios/Auditoria";
@@ -13,6 +21,14 @@ import Parametros from "../pages/utilitarios/Parametros";
 export const routesMap = {
   "/cadastros/clientes": Clientes,
   "/cadastros/marcas": Marcas,
+  "/cadastros/lotes": Lotes,
+  "/cadastros/pecas": PecasComponentes,
+  "/cadastros/vendedores": Vendedores,
+  "/cadastros/funcionarios": Funcionarios,
+  "/cadastros/tipo-extintores": TipoExtintores,
+  "/cadastros/cidades-nfe": CidadesNfe,
+  "/cadastros/transportadoras": Transportadoras,
+  "/cadastros/extintores": Extintores,
   "/servicos/ordens": Ordens,
   "/servicos/chamados": Chamados,
   "/relatorios/faturamento": Faturamento,

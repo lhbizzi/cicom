@@ -1,0 +1,267 @@
+{
+  "generated_at": "2026-09-18T18:57:00Z",
+  "modules": [
+    {
+      "name": "sist_main",
+      "path": "prg/",
+      "purpose": "Menu principal do sistema CICOM, gestão de ordens de serviço e menus operacionais",
+      "primary_files": [
+        "prg/SIST.PRG",
+        "prg/SIST1.PRG",
+        "prg/SIST2.PRG",
+        "prg/SIST3.PRG",
+        "prg/SIST4.PRG"
+      ],
+      "functions": [
+        {
+          "name": "SIST",
+          "file": "prg/SIST.PRG",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "TELAOS",
+          "file": "prg/CADERNO2.PRG",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "BAIXAOS",
+          "file": "prg/CADERNO1.PRG",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "MOVTO",
+          "fields": [
+            { "name": "NUM_OS", "type": "Numeric(6)", "required": true },
+            { "name": "COD_CLI", "type": "Numeric(6)", "required": true },
+            { "name": "DATA_ENT", "type": "Date", "required": true },
+            { "name": "VALOR_TOT", "type": "Numeric(12,2)", "required": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Uma Ordem de Serviço deve ser associada a um cliente cadastrado e válido",
+          "location": "prg/SIST1.PRG:45",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["cadastros_base", "caderno_extintores"],
+      "complexity": "high"
+    },
+    {
+      "name": "caderno_extintores",
+      "path": "prg/",
+      "purpose": "Vistoria técnica, ensaio hidrostático de extintores e laudo de manutenção",
+      "primary_files": [
+        "prg/CADERNO1.PRG",
+        "prg/CADERNO2.PRG",
+        "prg/CADERNO3.PRG",
+        "prg/caderno.prg",
+        "prg/caderno4.prg",
+        "prg/caderno5.prg"
+      ],
+      "functions": [
+        {
+          "name": "LANCAR",
+          "file": "prg/CADERNO1.PRG",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "R2EXTINTOR",
+          "file": "prg/CADERNO1.PRG",
+          "params": ["parquivo", "pcolunas", "pdireciona", "pturma1", "pturma2", "puni"],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "CADEXTIN",
+          "fields": [
+            { "name": "NUMERO", "type": "Character(12)", "required": true },
+            { "name": "COD_CLI", "type": "Numeric(6)", "required": true },
+            { "name": "CAPACIDADE", "type": "Character(10)", "required": true },
+            { "name": "AGENTE", "type": "Character(10)", "required": true },
+            { "name": "ULT_ENSAIO", "type": "Date", "required": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Extintores sujeitos a ensaio hidrostático (Nível 3) devem ter data de validade atualizada em CADEXTIN.PROX_ENSAIO para 5 anos",
+          "location": "prg/CADERNO1.PRG:235",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["cadastros_base", "digita_selos"],
+      "complexity": "high"
+    },
+    {
+      "name": "digita_selos",
+      "path": "prg/",
+      "purpose": "Lançamento em lote, validação de faixas e rastreabilidade de selos Inmetro",
+      "primary_files": [
+        "prg/DIGITA.PRG",
+        "prg/digse.prg",
+        "prg/seq.prg",
+        "prg/acerto.PRG",
+        "prg/MARRETA.PRG"
+      ],
+      "functions": [
+        {
+          "name": "DIGITA",
+          "file": "prg/DIGITA.PRG",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "DIGSE",
+          "file": "prg/digse.prg",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "SELO",
+          "fields": [
+            { "name": "NUM_SELO", "type": "Numeric(12)", "required": true },
+            { "name": "STATUS", "type": "Character(1)", "required": true },
+            { "name": "NUM_OS", "type": "Numeric(6)", "required": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Selos danificados ou extraviados devem ser obrigatoriamente registrados em FALTASEL.DBF com justificativa para auditoria Inmetro",
+          "location": "prg/digse.prg:112",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["caderno_extintores"],
+      "complexity": "medium"
+    },
+    {
+      "name": "faturamento_notas",
+      "path": "prg/",
+      "purpose": "Faturamento, emissão de Notas Fiscais e apuração de tributos",
+      "primary_files": [
+        "prg/nota.prg",
+        "prg/lancar.prg",
+        "prg/Fol.prg",
+        "prg/si.prg",
+        "prg/si6.prg"
+      ],
+      "functions": [
+        {
+          "name": "NOTA",
+          "file": "prg/nota.prg",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "R2MOSTRANF",
+          "file": "prg/CADERNO1.PRG",
+          "params": ["pArquivo", "pColunas", "pDireciona"],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "SAIDA",
+          "fields": [
+            { "name": "NUM_NF", "type": "Numeric(8)", "required": true },
+            { "name": "VALOR_TOTAL", "type": "Numeric(12,2)", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Faturamento calcula retenção de ISSQN para serviços de manutenção e ICMS para fornecimento de peças",
+          "location": "prg/nota.prg:88",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["sist_main", "cadastros_base"],
+      "complexity": "high"
+    },
+    {
+      "name": "etiquetas_zebra",
+      "path": "EtiZebra/",
+      "purpose": "Modelos de impressão térmica de etiquetas adesivas Zebra (ZPL/EPL)",
+      "primary_files": [
+        "EtiZebra/EtiNR23/",
+        "EtiZebra/Eticadastro/",
+        "EtiZebra/Etiqueta/"
+      ],
+      "functions": [],
+      "entities": [],
+      "business_rules": [
+        {
+          "description": "Etiqueta deve conter instrução de operação conforme norma NR-23 e número do selo de conformidade Inmetro",
+          "location": "EtiZebra/Etiqueta/ETIQUETA.PRG",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["caderno_extintores"],
+      "complexity": "low"
+    },
+    {
+      "name": "cadastros_base",
+      "path": "prg/",
+      "purpose": "Cadastros base (Clientes, Vendedores, Serviços) e bibliotecas reutilizáveis",
+      "primary_files": [
+        "prg/PEQLIB.PRG",
+        "prg/FUNCAO.PRG",
+        "prg/TBR12.PRG"
+      ],
+      "functions": [
+        {
+          "name": "AchaTudo",
+          "file": "prg/Busca.prg",
+          "params": [],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "CADCLI",
+          "fields": [
+            { "name": "CODIGO", "type": "Numeric(6)", "required": true },
+            { "name": "NOME", "type": "Character(45)", "required": true },
+            { "name": "CNPJ", "type": "Character(18)", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "CNPJ de clientes deve ser validado pelo algoritmo de dígitos verificadores módulo 11",
+          "location": "prg/FUNCAO.PRG:150",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": [],
+      "complexity": "medium"
+    }
+  ]
+}

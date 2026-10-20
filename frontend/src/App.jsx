@@ -29,6 +29,46 @@ function App() {
           title: "Marcas",
           subtitle: "Controle e Cadastro de Marcas de Extintores",
         };
+      case "/cadastros/lotes":
+        return {
+          title: "Lotes",
+          subtitle: "Recepção e Agrupamento de Extintores em Lote",
+        };
+      case "/cadastros/pecas":
+        return {
+          title: "Serviços / Materiais",
+          subtitle: "Cadastro de Insumos, Peças e Tabela de Serviços",
+        };
+      case "/cadastros/vendedores":
+        return {
+          title: "Vendedores",
+          subtitle: "Cadastro de Vendedores Comerciais e Comissões",
+        };
+      case "/cadastros/funcionarios":
+        return {
+          title: "Funcionários",
+          subtitle: "Cadastro da Equipe Operacional e de Oficina",
+        };
+      case "/cadastros/tipo-extintores":
+        return {
+          title: "Tipo Extintores",
+          subtitle: "Agentes Extintores, Pressões e Normas ABNT",
+        };
+      case "/cadastros/cidades-nfe":
+        return {
+          title: "Cidades NFe",
+          subtitle: "Códigos IBGE dos Municípios e Alíquotas de ISS",
+        };
+      case "/cadastros/transportadoras":
+        return {
+          title: "Transportadoras",
+          subtitle: "Frota de Veículos, Coleta e Entrega Técnica",
+        };
+      case "/cadastros/extintores":
+        return {
+          title: "Extintores",
+          subtitle: "Fichário Geral por Número de Série e Vencimentos ABNT",
+        };
       case "/servicos/ordens":
         return {
           title: "Ordens de Serviço",
