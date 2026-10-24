@@ -37,6 +37,9 @@
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-blur: blur(12px);
+  
+  --modal-backdrop: rgba(255, 255, 255, 0.5);
+  --modal-backdrop-blur: blur(8px) saturate(130%);
 }
 
 [data-theme="dark"] {
@@ -70,6 +73,9 @@
   
   --glass-bg: rgba(17, 24, 39, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);
+  
+  --modal-backdrop: rgba(15, 23, 42, 0.5);
+  --modal-backdrop-blur: blur(8px) saturate(130%);
 }
 
 * {

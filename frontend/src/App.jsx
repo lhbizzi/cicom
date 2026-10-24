@@ -70,9 +70,35 @@ function App() {
           subtitle: "Fichário Geral por Número de Série e Vencimentos ABNT",
         };
       case "/servicos/ordens":
+      case "/servicos/ordens/montagem":
         return {
-          title: "Ordens de Serviço",
-          subtitle: "Fluxo de Trabalho e Execução de Suporte",
+          title: "Montagem de Ordem Servico",
+          subtitle: "Fluxo de Trabalho, Composição e Abertura de OS",
+        };
+      case "/servicos/ordens/avulsa":
+        return {
+          title: "Ordem de Servico Avulsa",
+          subtitle: "Abertura Rápida de OS Avulsa para Atendimento Imediato",
+        };
+      case "/servicos/ordens/baixa":
+        return {
+          title: "Baixa Servico Feito OS",
+          subtitle: "Apontamento e Baixa Operacional de Serviços Realizados",
+        };
+      case "/servicos/ordens/vincular-nota":
+        return {
+          title: "Vincular Nota a Ordem de Sv.",
+          subtitle: "Associação de Notas Fiscais às Ordens de Serviço",
+        };
+      case "/servicos/ordens/vincular-oc":
+        return {
+          title: "Vincular OC a Ordem de Sv.",
+          subtitle: "Vinculação de Ordens de Compra e Autorizações de Fornecimento",
+        };
+      case "/servicos/ordens/relatorio":
+        return {
+          title: "Relatorio de Ordem em Servico",
+          subtitle: "Listagem Analítica, Filtros e Relatórios Operacionais de OS",
         };
       case "/servicos/chamados":
         return {
@@ -176,7 +202,7 @@ function App() {
 
         {/* Dynamic content rendering zone */}
         <div className="page-container">
-          <AppRoutes activeRoute={currentRoute} />
+          <AppRoutes activeRoute={currentRoute} setCurrentRoute={setCurrentRoute} />
         </div>
       </main>
     </div>

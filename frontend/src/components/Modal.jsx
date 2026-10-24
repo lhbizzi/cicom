@@ -12,13 +12,13 @@ export default function Modal({ isOpen, onClose, title, children }) {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(11, 15, 25, 0.6); /* Slightly darker tinted backdrop */
-          backdrop-filter: blur(10px) saturate(120%); /* Premium glassy blur across the entire viewport */
-          -webkit-backdrop-filter: blur(10px) saturate(120%);
+          background: var(--modal-backdrop);
+          backdrop-filter: var(--modal-backdrop-blur);
+          -webkit-backdrop-filter: var(--modal-backdrop-blur);
           display: flex;
           justify-content: center;
           align-items: center;
-          z-index: 9999; /* Ensure it floats over sidebar, content headers and layout elements */
+          z-index: 99999; /* Ensure it floats over sidebar, content headers and layout elements */
           animation: modalFadeIn 0.2s ease-out;
           padding: 1rem;
         }

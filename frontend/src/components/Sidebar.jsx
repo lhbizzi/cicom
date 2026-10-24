@@ -230,7 +230,7 @@ const DYNAMIC_MENUS = [
     children: [
       {
         id: "ser-ord",
-        title: "Ordens de Serviço",
+        title: "Ordem de Serviço",
         icon: (
           <svg
             width="15"
@@ -247,7 +247,118 @@ const DYNAMIC_MENUS = [
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
         ),
-        route: "/servicos/ordens",
+        children: [
+          {
+            id: "ser-ord-montagem",
+            title: "Montagem de Ordem Servico",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+            ),
+            route: "/servicos/ordens/montagem",
+          },
+          {
+            id: "ser-ord-avulsa",
+            title: "Ordem de Servico Avulsa",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                <polyline points="13 2 13 9 20 9"></polyline>
+                <line x1="12" y1="13" x2="12" y2="17"></line>
+                <line x1="10" y1="15" x2="14" y2="15"></line>
+              </svg>
+            ),
+            route: "/servicos/ordens/avulsa",
+          },
+          {
+            id: "ser-ord-baixa",
+            title: "Baixa Servico Feito OS",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            ),
+            route: "/servicos/ordens/baixa",
+          },
+          {
+            id: "ser-ord-vinc-nota",
+            title: "Vincular Nota a Ordem de Sv.",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            ),
+            route: "/servicos/ordens/vincular-nota",
+          },
+          {
+            id: "ser-ord-vinc-oc",
+            title: "Vincular OC a Ordem de Sv.",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            ),
+            route: "/servicos/ordens/vincular-oc",
+          },
+          {
+            id: "ser-ord-relatorio",
+            title: "Relatorio de Ordem em Servico",
+            icon: (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            ),
+            route: "/servicos/ordens/relatorio",
+          },
+        ],
       },
       {
         id: "ser-cha",
@@ -470,18 +581,49 @@ export default function Sidebar({
   const [expandedMenus, setExpandedMenus] = useState({
     cadastros: true, // Default open
     servicos: false,
+    "ser-ord": true, // Pre-expanded submenu
     relatorios: false,
     estoque: false,
     utilitarios: false,
   });
 
-  // Auto expand parent module if current route belongs to it
+  const isRouteActive = (route) => {
+    if (currentRoute === route) return true;
+    if (route === "/servicos/ordens/montagem" && currentRoute === "/servicos/ordens") return true;
+    return false;
+  };
+
+  const isItemActive = (item) => {
+    if (!item) return false;
+    if (item.route && isRouteActive(item.route)) return true;
+    if (item.children) {
+      return item.children.some((child) => isItemActive(child));
+    }
+    return false;
+  };
+
+  // Auto expand parent module and submenus if current route belongs to it
   useEffect(() => {
     DYNAMIC_MENUS.forEach((menu) => {
-      if (menu.children && menu.children.some((child) => child.route === currentRoute)) {
-        setExpandedMenus((prev) => {
-          if (prev[menu.id]) return prev;
-          return { ...prev, [menu.id]: true };
+      if (menu.children) {
+        menu.children.forEach((child) => {
+          if (child.children) {
+            const hasActiveGrandchild = child.children.some((sub) =>
+              isRouteActive(sub.route)
+            );
+            if (hasActiveGrandchild) {
+              setExpandedMenus((prev) => ({
+                ...prev,
+                [menu.id]: true,
+                [child.id]: true,
+              }));
+            }
+          } else if (isRouteActive(child.route)) {
+            setExpandedMenus((prev) => ({
+              ...prev,
+              [menu.id]: true,
+            }));
+          }
         });
       }
     });
@@ -490,7 +632,7 @@ export default function Sidebar({
   // Ensure active menu item is scrolled into view if needed
   useEffect(() => {
     const timer = setTimeout(() => {
-      const activeEl = document.querySelector(".submenu-item.active");
+      const activeEl = document.querySelector(".submenu-item.active, .sub-submenu-item.active");
       if (activeEl) {
         activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
@@ -508,15 +650,15 @@ export default function Sidebar({
     }));
   };
 
-  const isRouteActive = (route) => {
-    return currentRoute === route;
-  };
-
-  const isParentActive = (menu) => {
-    if (menu.children) {
-      return menu.children.some((child) => isRouteActive(child.route));
+  const toggleSubmenu = (childId, e) => {
+    if (e) e.stopPropagation();
+    if (collapsed) {
+      setCollapsed(false);
     }
-    return isRouteActive(menu.route);
+    setExpandedMenus((prev) => ({
+      ...prev,
+      [childId]: !prev[childId],
+    }));
   };
 
   return (
@@ -532,7 +674,7 @@ export default function Sidebar({
         {DYNAMIC_MENUS.map((menu) => {
           const hasChildren = !!menu.children;
           const isExpanded = expandedMenus[menu.id];
-          const activeClass = isParentActive(menu) ? "active" : "";
+          const activeClass = isItemActive(menu) ? "active" : "";
 
           return (
             <div
@@ -577,16 +719,66 @@ export default function Sidebar({
               {/* Submenu Accordion Items */}
               {hasChildren && (
                 <div className="submenu-container">
-                  {menu.children.map((child) => (
-                    <button
-                      key={child.id}
-                      className={`submenu-item ${isRouteActive(child.route) ? "active" : ""}`}
-                      onClick={() => setCurrentRoute(child.route)}
-                    >
-                      <span className="submenu-item-icon">{child.icon}</span>
-                      <span>{child.title}</span>
-                    </button>
-                  ))}
+                  {menu.children.map((child) => {
+                    const hasSubChildren = !!child.children;
+                    const isSubExpanded = expandedMenus[child.id];
+                    const isSubActive = isItemActive(child);
+
+                    if (hasSubChildren) {
+                      return (
+                        <div
+                          key={child.id}
+                          className={`sub-menu-group ${isSubExpanded ? "expanded" : ""}`}
+                        >
+                          <button
+                            className={`submenu-item submenu-parent ${isSubActive ? "active" : ""}`}
+                            onClick={(e) => toggleSubmenu(child.id, e)}
+                          >
+                            <span className="submenu-item-icon">{child.icon}</span>
+                            <span className="submenu-item-label">{child.title}</span>
+                            <span className="submenu-arrow">
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                              >
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                              </svg>
+                            </span>
+                          </button>
+
+                          <div className="sub-submenu-container">
+                            {child.children.map((subChild) => (
+                              <button
+                                key={subChild.id}
+                                className={`sub-submenu-item ${isRouteActive(subChild.route) ? "active" : ""}`}
+                                onClick={() => setCurrentRoute(subChild.route)}
+                                title={subChild.title}
+                              >
+                                <span className="sub-submenu-item-icon">{subChild.icon}</span>
+                                <span className="sub-submenu-item-label">{subChild.title}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={child.id}
+                        className={`submenu-item ${isRouteActive(child.route) ? "active" : ""}`}
+                        onClick={() => setCurrentRoute(child.route)}
+                        title={child.title}
+                      >
+                        <span className="submenu-item-icon">{child.icon}</span>
+                        <span className="submenu-item-label">{child.title}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

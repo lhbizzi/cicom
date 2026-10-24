@@ -14,6 +14,11 @@ import Auditoria from "../pages/relatorios/Auditoria";
 import Faturamento from "../pages/relatorios/Faturamento";
 import Chamados from "../pages/servicos/Chamados";
 import Ordens from "../pages/servicos/Ordens";
+import OrdemAvulsa from "../pages/servicos/OrdemAvulsa";
+import BaixaServico from "../pages/servicos/BaixaServico";
+import VincularNota from "../pages/servicos/VincularNota";
+import VincularOC from "../pages/servicos/VincularOC";
+import RelatorioOS from "../pages/servicos/RelatorioOS";
 import Manutencao from "../pages/utilitarios/Manutencao";
 import Parametros from "../pages/utilitarios/Parametros";
 
@@ -30,6 +35,12 @@ export const routesMap = {
   "/cadastros/transportadoras": Transportadoras,
   "/cadastros/extintores": Extintores,
   "/servicos/ordens": Ordens,
+  "/servicos/ordens/montagem": Ordens,
+  "/servicos/ordens/avulsa": OrdemAvulsa,
+  "/servicos/ordens/baixa": BaixaServico,
+  "/servicos/ordens/vincular-nota": VincularNota,
+  "/servicos/ordens/vincular-oc": VincularOC,
+  "/servicos/ordens/relatorio": RelatorioOS,
   "/servicos/chamados": Chamados,
   "/relatorios/faturamento": Faturamento,
   "/relatorios/auditoria": Auditoria,
@@ -39,7 +50,7 @@ export const routesMap = {
   "/utilitarios/manutencao": Manutencao,
 };
 
-export default function AppRoutes({ activeRoute }) {
+export default function AppRoutes({ activeRoute, setCurrentRoute }) {
   const Component = routesMap[activeRoute];
 
   if (!Component) {
@@ -56,5 +67,5 @@ export default function AppRoutes({ activeRoute }) {
     );
   }
 
-  return <Component />;
+  return <Component setCurrentRoute={setCurrentRoute} currentRoute={activeRoute} />;
 }

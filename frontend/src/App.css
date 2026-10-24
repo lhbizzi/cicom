@@ -1134,6 +1134,118 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   opacity: 0.8;
+  flex-shrink: 0;
+}
+
+/* Level 2 Sub-Accordion (Sub-menus inside Submenu) */
+.sub-menu-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.submenu-parent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.submenu-parent .submenu-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sub-menu-group.expanded > .submenu-parent .submenu-arrow {
+  transform: rotate(90deg);
+}
+
+.sub-submenu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.65rem;
+  margin-left: 0.75rem;
+  border-left: 1.5px solid var(--border-color);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    padding 0.25s ease;
+}
+
+.sub-menu-group.expanded > .sub-submenu-container {
+  max-height: 800px;
+  opacity: 1;
+  padding-top: 0.2rem;
+  padding-bottom: 0.35rem;
+}
+
+.sub-submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.sub-submenu-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sub-submenu-item.active {
+  background-color: rgba(var(--accent-primary-rgb), 0.1);
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.sub-submenu-item-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+.sub-submenu-item.active .sub-submenu-item-icon {
+  opacity: 1;
+  color: var(--accent-primary);
+}
+
+.sub-submenu-item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar.collapsed .submenu-container {
@@ -1143,3 +1255,106 @@ input:checked + .slider:before {
 .sidebar.collapsed .menu-arrow {
   display: none !important;
 }
+
+/* Ordem de Servico Sub-Navigation Tabs */
+.os-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.5rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.os-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.os-tab-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.os-tab-btn.active {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.35);
+}
+
+.os-tab-btn .os-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.os-tab-btn.active .os-tab-icon {
+  opacity: 1;
+}
+
+/* Universal Fullscreen Modal Overlay (Translucent with full-page blur) */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: var(--modal-backdrop) !important;
+  backdrop-filter: var(--modal-backdrop-blur) !important;
+  -webkit-backdrop-filter: var(--modal-backdrop-blur) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 1.5rem !important;
+  margin: 0 !important;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-dialog {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  position: relative;
+  animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
