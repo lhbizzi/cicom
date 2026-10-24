@@ -4,38 +4,102 @@ import Grid from "../../components/Grid";
 
 const INITIAL_LOTS = [
   {
-    id: "LOT-2026-01",
-    clientName: "Usina Santa Rita S/A",
-    entryDate: "2026-09-20",
-    extinguisherQty: 45,
-    status: "Em Processamento",
-    notes: "Lote de extintores de alta pressão para ensaio quinquenal ABNT",
+    nrLote: 101,
+    tipo: "D",
+    empresa: "Extincal Indústria Química Ltda",
+    dtFabricacao: "2026-01-15",
+    validade: "2031-01-15",
+    batelada: "BAT-9942",
+    nrLoteEmp: "LT-88410",
+    folhaNr: "142",
+    nrNotaFiscal: "18540",
+    dataCompra: "2026-01-25",
+    qtde: 1000,
+    codigoProd: "PQS-ABC-90",
+    tipoExtint: "PQS ABC",
+    classe: "ABC",
+    qtdeLancada: 340,
   },
   {
-    id: "LOT-2026-02",
-    clientName: "Condomínio Solar das Palmeiras",
-    entryDate: "2026-09-22",
-    extinguisherQty: 12,
-    status: "Concluído",
-    notes: "Inspeção Nível 2 e recarga de PQS 4kg",
+    nrLote: 102,
+    tipo: "D",
+    empresa: "Química Resil Minas S/A",
+    dtFabricacao: "2025-10-10",
+    validade: "2030-10-10",
+    batelada: "BAT-7718",
+    nrLoteEmp: "RES-4011",
+    folhaNr: "145",
+    nrNotaFiscal: "12309",
+    dataCompra: "2025-10-22",
+    qtde: 500,
+    codigoProd: "PQS-BC-70",
+    tipoExtint: "PQS BC",
+    classe: "BC",
+    qtdeLancada: 500,
   },
   {
-    id: "LOT-2026-03",
-    clientName: "Supermercado Silva",
-    entryDate: "2026-09-25",
-    extinguisherQty: 28,
-    status: "Aguardando Triagem",
-    notes: "Recepção de extintores de água pressurizada e CO2",
+    nrLote: 103,
+    tipo: "D",
+    empresa: "White Martins Gases Industriais",
+    dtFabricacao: "2026-03-01",
+    validade: "2031-03-01",
+    batelada: "WM-4490",
+    nrLoteEmp: "WM-9921",
+    folhaNr: "150",
+    nrNotaFiscal: "33100",
+    dataCompra: "2026-03-10",
+    qtde: 800,
+    codigoProd: "CO2-IND",
+    tipoExtint: "CO2",
+    classe: "BC",
+    qtdeLancada: 120,
+  },
+  {
+    nrLote: 104,
+    tipo: "D",
+    empresa: "Kidde Brasil Proteção Contra Incêndio",
+    dtFabricacao: "2026-02-18",
+    validade: "2031-02-18",
+    batelada: "KD-1102",
+    nrLoteEmp: "KB-2026-B",
+    folhaNr: "153",
+    nrNotaFiscal: "27890",
+    dataCompra: "2026-02-28",
+    qtde: 600,
+    codigoProd: "EM-AFFF-6",
+    tipoExtint: "Espuma Mecânica",
+    classe: "AB",
+    qtdeLancada: 45,
   },
 ];
 
+const TIPO_EXTINT_OPTIONS = [
+  "PQS ABC",
+  "PQS BC",
+  "CO2",
+  "Água Pressurizada (AP)",
+  "Espuma Mecânica (EM)",
+  "Classe K",
+];
+
+const CLASSE_OPTIONS = ["ABC", "BC", "A", "AB", "K", "D"];
+
 const EMPTY_LOT = {
-  id: "",
-  clientName: "",
-  entryDate: new Date().toISOString().split("T")[0],
-  extinguisherQty: 1,
-  status: "Aguardando Triagem",
-  notes: "",
+  nrLote: "",
+  tipo: "D",
+  empresa: "",
+  dtFabricacao: "",
+  validade: "",
+  batelada: "",
+  nrLoteEmp: "",
+  folhaNr: "",
+  nrNotaFiscal: "",
+  dataCompra: new Date().toISOString().split("T")[0],
+  qtde: 0,
+  codigoProd: "",
+  tipoExtint: "PQS ABC",
+  classe: "ABC",
+  qtdeLancada: 0,
 };
 
 export default function Lotes() {
@@ -45,17 +109,19 @@ export default function Lotes() {
   const [modalMode, setModalMode] = useState("add");
   const [formData, setFormData] = useState(EMPTY_LOT);
 
-  const deleteLot = (id) => {
-    if (window.confirm(`Confirma a exclusão do lote ${id}?`)) {
-      setLots(lots.filter((l) => l.id !== id));
+  const deleteLot = (nrLote) => {
+    if (window.confirm(`Confirma a exclusão do Lote Nº ${nrLote}?`)) {
+      setLots(lots.filter((l) => l.nrLote !== nrLote));
     }
   };
 
   const openAddModal = () => {
     setModalMode("add");
+    const nextNr = lots.length > 0 ? Math.max(...lots.map((l) => Number(l.nrLote) || 0)) + 1 : 1;
     setFormData({
       ...EMPTY_LOT,
-      id: `LOT-2026-0${lots.length + 1}`,
+      nrLote: nextNr,
+      dataCompra: new Date().toISOString().split("T")[0],
     });
     setIsModalOpen(true);
   };
@@ -70,75 +136,184 @@ export default function Lotes() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "extinguisherQty" ? Number(value) : value,
+      [name]:
+        name === "nrLote" || name === "qtde" || name === "qtdeLancada"
+          ? Number(value)
+          : value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.clientName.trim()) {
-      alert("Por favor, selecione o cliente do lote.");
+    if (!formData.empresa.trim()) {
+      alert("Por favor, preencha o campo Empresa / Fornecedor.");
       return;
     }
 
     if (modalMode === "add") {
-      setLots([formData, ...lots]);
+      if (lots.some((l) => Number(l.nrLote) === Number(formData.nrLote))) {
+        alert(`Já existe um lote cadastrado com o Nr ${formData.nrLote}.`);
+        return;
+      }
+      setLots([{ ...formData, nrLote: Number(formData.nrLote) }, ...lots]);
     } else {
-      setLots(lots.map((item) => (item.id === formData.id ? formData : item)));
+      setLots(
+        lots.map((item) =>
+          item.nrLote === formData.nrLote ? { ...formData, nrLote: Number(formData.nrLote) } : item
+        )
+      );
     }
     setIsModalOpen(false);
   };
 
-  const filteredData = lots.filter(
-    (item) =>
-      item.id.toLowerCase().includes(search.toLowerCase()) ||
-      item.clientName.toLowerCase().includes(search.toLowerCase())
-  );
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    try {
+      const parts = dateStr.split("-");
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dateStr;
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const filteredData = lots.filter((item) => {
+    const q = search.toLowerCase();
+    return (
+      String(item.nrLote).includes(q) ||
+      item.empresa.toLowerCase().includes(q) ||
+      item.batelada.toLowerCase().includes(q) ||
+      item.nrNotaFiscal.toLowerCase().includes(q) ||
+      item.codigoProd.toLowerCase().includes(q) ||
+      item.tipoExtint.toLowerCase().includes(q)
+    );
+  });
 
   const columns = [
     {
-      header: "Código Lote",
-      accessor: "id",
-      cellStyle: { fontWeight: 700, color: "var(--accent-primary)", width: "130px" },
-    },
-    {
-      header: "Cliente Proprietário",
-      accessor: "clientName",
-      render: (item) => <span style={{ fontWeight: 600 }}>{item.clientName}</span>,
-    },
-    {
-      header: "Data de Entrada",
-      accessor: "entryDate",
-      render: (item) => <span>{new Date(item.entryDate).toLocaleDateString("pt-BR")}</span>,
-    },
-    {
-      header: "Qtd. Extintores",
-      accessor: "extinguisherQty",
+      header: "Nr Lote",
+      accessor: "nrLote",
+      cellStyle: { width: "110px", fontWeight: 700, color: "var(--accent-primary)" },
       render: (item) => (
-        <span className="badge badge-info" style={{ fontWeight: 700 }}>
-          {item.extinguisherQty} Unidades
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <span>#{item.nrLote}</span>
+          <span
+            style={{
+              fontSize: "0.7rem",
+              background: "var(--bg-hover)",
+              padding: "2px 6px",
+              borderRadius: "4px",
+              fontWeight: 600,
+              color: "var(--text-muted)",
+            }}
+          >
+            {item.tipo || "D"}
+          </span>
+        </div>
       ),
     },
     {
-      header: "Status",
-      accessor: "status",
+      header: "Empresa",
+      accessor: "empresa",
+      render: (item) => (
+        <div>
+          <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{item.empresa}</div>
+          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+            Batelada: <strong>{item.batelada || "-"}</strong> • Lote Emp: <strong>{item.nrLoteEmp || "-"}</strong>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Produto / Tipo / Classe",
+      accessor: "codigoProd",
+      render: (item) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>
+            {item.codigoProd || "S/ Cód"} — <span style={{ color: "var(--accent-primary)" }}>{item.tipoExtint}</span>
+          </div>
+          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+            Classe: <strong>{item.classe}</strong>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Fabricação / Validade",
+      accessor: "dtFabricacao",
+      render: (item) => (
+        <div style={{ fontSize: "0.82rem" }}>
+          <div>Fab: {formatDate(item.dtFabricacao)}</div>
+          <div style={{ color: "var(--text-muted)" }}>Val: {formatDate(item.validade)}</div>
+        </div>
+      ),
+    },
+    {
+      header: "Doc / NF / Folha",
+      accessor: "nrNotaFiscal",
+      render: (item) => (
+        <div style={{ fontSize: "0.82rem" }}>
+          <div>NF: <strong>{item.nrNotaFiscal || "-"}</strong></div>
+          <div style={{ color: "var(--text-muted)" }}>Folha: {item.folhaNr || "-"}</div>
+        </div>
+      ),
+    },
+    {
+      header: "Qtde / Lançada / Saldo",
+      accessor: "qtde",
       render: (item) => {
-        if (item.status === "Concluído") return <span className="badge badge-success">🟢 Concluído</span>;
-        if (item.status === "Em Processamento") return <span className="badge badge-warning">⏳ Em Oficina</span>;
-        return <span className="badge">📥 {item.status}</span>;
+        const saldo = (item.qtde || 0) - (item.qtdeLancada || 0);
+        const percent = item.qtde > 0 ? Math.min(100, Math.round((item.qtdeLancada / item.qtde) * 100)) : 0;
+        const isEsgotado = saldo <= 0;
+
+        return (
+          <div style={{ minWidth: "150px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "3px" }}>
+              <span>Lançado: <strong>{item.qtdeLancada}</strong> / {item.qtde}</span>
+              <span
+                style={{
+                  fontWeight: 700,
+                  color: isEsgotado ? "#ef4444" : saldo < item.qtde * 0.2 ? "#f59e0b" : "#10b981",
+                }}
+              >
+                {isEsgotado ? "Esgotado" : `Saldo: ${saldo}`}
+              </span>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: "6px",
+                backgroundColor: "var(--bg-hover)",
+                borderRadius: "3px",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${percent}%`,
+                  height: "100%",
+                  backgroundColor: isEsgotado ? "#ef4444" : percent > 80 ? "#f59e0b" : "var(--accent-primary)",
+                  borderRadius: "3px",
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+          </div>
+        );
       },
     },
     {
       header: "Ações",
-      headerStyle: { width: "160px", textAlign: "right" },
+      headerStyle: { width: "150px", textAlign: "right" },
       cellStyle: { textAlign: "right" },
       render: (item) => (
         <div className="action-buttons" style={{ justifyContent: "flex-end" }}>
           <button className="btn-table-action" onClick={() => openEditModal(item)}>
             Editar
           </button>
-          <button className="btn-table-action delete" onClick={() => deleteLot(item.id)}>
+          <button className="btn-table-action delete" onClick={() => deleteLot(item.nrLote)}>
             Excluir
           </button>
         </div>
@@ -146,26 +321,28 @@ export default function Lotes() {
     },
   ];
 
+  const saldoCalculado = (Number(formData.qtde) || 0) - (Number(formData.qtdeLancada) || 0);
+
   return (
     <div className="glass-panel">
       <div className="control-bar" style={{ flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <h4 style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            📦 Cadastro e Recepção de Lotes
+            🧪 Cadastro de Lotes de Matéria-Prima & Agentes Extintores
           </h4>
           <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-            Agrupamento de extintores recolhidos por cliente para ensaios e recargas em lote
+            Controle de lotes, bateladas, fornecedores, notas fiscais e rastreabilidade Inmetro
           </span>
         </div>
 
         <div className="flex-gap">
           <input
             type="text"
-            placeholder="Pesquisar Lote ou Cliente..."
+            placeholder="Pesquisar por Nr Lote, Empresa, Batelada, NF..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="input-search"
-            style={{ width: "260px" }}
+            style={{ width: "320px" }}
           />
           <button className="btn-primary" onClick={openAddModal}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -182,82 +359,233 @@ export default function Lotes() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={modalMode === "add" ? "✨ Novo Lote de Extintores" : `✏️ Editar Lote ${formData.id}`}
+        title={modalMode === "add" ? "✨ Novo Lote de Insumo / Matéria-Prima" : `✏️ Editar Lote Nº ${formData.nrLote}`}
       >
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
+          <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {/* Linha 1: Nr Lote + D (Tipo) & Empresa */}
+            <div style={{ display: "grid", gridTemplateColumns: "130px 90px 1fr", gap: "1rem" }}>
               <div className="form-group">
-                <label>Código do Lote</label>
+                <label>Nr Lote</label>
                 <input
-                  type="text"
-                  name="id"
-                  value={formData.id}
-                  readOnly
-                  style={{ background: "var(--bg-hover)", cursor: "not-allowed", fontWeight: 700 }}
+                  type="number"
+                  name="nrLote"
+                  value={formData.nrLote}
+                  onChange={handleInputChange}
+                  required
+                  min={0}
+                  style={{ fontWeight: 700 }}
+                  placeholder="0"
                 />
               </div>
 
               <div className="form-group">
-                <label>Cliente Proprietário</label>
+                <label>Tipo</label>
                 <input
                   type="text"
-                  name="clientName"
-                  value={formData.clientName}
+                  name="tipo"
+                  value={formData.tipo}
                   onChange={handleInputChange}
-                  placeholder="Ex: Usina Santa Rita S/A"
+                  maxLength={3}
+                  style={{ textAlign: "center", fontWeight: 700 }}
+                  placeholder="D"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Empresa</label>
+                <input
+                  type="text"
+                  name="empresa"
+                  value={formData.empresa}
+                  onChange={handleInputChange}
+                  placeholder="Nome / Razão Social da Empresa Fornecedora"
                   required
                 />
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
+            {/* Linha 2: Dt Fabricacao & Validade */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <div className="form-group">
-                <label>Data de Recebimento</label>
+                <label>Dt Fabricacao</label>
                 <input
                   type="date"
-                  name="entryDate"
-                  value={formData.entryDate}
+                  name="dtFabricacao"
+                  value={formData.dtFabricacao}
                   onChange={handleInputChange}
-                  required
                 />
               </div>
 
               <div className="form-group">
-                <label>Quantidade de Extintores</label>
+                <label>Validade</label>
                 <input
-                  type="number"
-                  name="extinguisherQty"
-                  value={formData.extinguisherQty}
+                  type="date"
+                  name="validade"
+                  value={formData.validade}
                   onChange={handleInputChange}
-                  min={1}
-                  required
+                />
+              </div>
+            </div>
+
+            {/* Linha 3: Batelada... & Nr Lote emp.: */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="form-group">
+                <label>Batelada...</label>
+                <input
+                  type="text"
+                  name="batelada"
+                  value={formData.batelada}
+                  onChange={handleInputChange}
+                  placeholder="Ex: BAT-9942"
                 />
               </div>
 
               <div className="form-group">
-                <label>Status do Lote</label>
-                <select name="status" value={formData.status} onChange={handleInputChange}>
-                  <option value="Aguardando Triagem">Aguardando Triagem</option>
-                  <option value="Em Processamento">Em Processamento na Oficina</option>
-                  <option value="Concluído">Concluído</option>
+                <label>Nr Lote emp.:</label>
+                <input
+                  type="text"
+                  name="nrLoteEmp"
+                  value={formData.nrLoteEmp}
+                  onChange={handleInputChange}
+                  placeholder="Ex: LT-88410"
+                />
+              </div>
+            </div>
+
+            {/* Linha 4: Folha Nº... & Nr N. Fiscal: */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="form-group">
+                <label>Folha Nº...</label>
+                <input
+                  type="text"
+                  name="folhaNr"
+                  value={formData.folhaNr}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 142"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Nr N. Fiscal:</label>
+                <input
+                  type="text"
+                  name="nrNotaFiscal"
+                  value={formData.nrNotaFiscal}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 18540"
+                />
+              </div>
+            </div>
+
+            {/* Linha 5: Data Compra & Codigo Prod */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="form-group">
+                <label>Data Compra</label>
+                <input
+                  type="date"
+                  name="dataCompra"
+                  value={formData.dataCompra}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Codigo Prod:</label>
+                <input
+                  type="text"
+                  name="codigoProd"
+                  value={formData.codigoProd}
+                  onChange={handleInputChange}
+                  placeholder="Ex: PQS-ABC-90 ou 004"
+                />
+              </div>
+            </div>
+
+            {/* Linha 6: Tipo Extint & Classe */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="form-group">
+                <label>Tipo Extint:</label>
+                <select
+                  name="tipoExtint"
+                  value={formData.tipoExtint}
+                  onChange={handleInputChange}
+                >
+                  {TIPO_EXTINT_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Classe:</label>
+                <select
+                  name="classe"
+                  value={formData.classe}
+                  onChange={handleInputChange}
+                >
+                  {CLASSE_OPTIONS.map((cls) => (
+                    <option key={cls} value={cls}>
+                      Classe {cls}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
-            <div className="form-group" style={{ marginTop: "0.5rem" }}>
-              <label>Observações / Instruções da OS</label>
-              <textarea
-                name="notes"
-                rows={3}
-                value={formData.notes}
-                onChange={handleInputChange}
-                placeholder="Ex: Extintores da área de moagem, prioridade de entrega"
-              />
+            {/* Linha 7: Qtde & Qtde Lancada + Card Saldo */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", alignItems: "center" }}>
+              <div className="form-group">
+                <label>Qtde (Total):</label>
+                <input
+                  type="number"
+                  name="qtde"
+                  value={formData.qtde}
+                  onChange={handleInputChange}
+                  min={0}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Qtde Lancada:</label>
+                <input
+                  type="number"
+                  name="qtdeLancada"
+                  value={formData.qtdeLancada}
+                  onChange={handleInputChange}
+                  min={0}
+                />
+              </div>
+
+              <div
+                style={{
+                  background: "var(--bg-hover)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  padding: "0.75rem",
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                  Saldo Restante
+                </div>
+                <div
+                  style={{
+                    fontSize: "1.2rem",
+                    fontWeight: 700,
+                    color: saldoCalculado < 0 ? "#ef4444" : saldoCalculado === 0 ? "#f59e0b" : "#10b981",
+                  }}
+                >
+                  {saldoCalculado}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer" style={{ marginTop: "1.5rem" }}>
             <button
               type="button"
               className="btn-table-action"

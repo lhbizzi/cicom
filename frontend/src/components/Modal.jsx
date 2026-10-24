@@ -27,7 +27,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
           border: 1px solid var(--border-color);
           border-radius: 16px;
           width: 95%;
-          max-width: 900px;
+          max-width: 960px;
           max-height: 90vh;
           overflow-y: auto;
           overflow-x: hidden; /* Prevent horizontal scrollbars inside the modal container */

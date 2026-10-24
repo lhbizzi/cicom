@@ -25,16 +25,17 @@
 
 .sidebar.collapsed {
   width: var(--sidebar-collapsed-width);
+  overflow: hidden;
 }
 
 /* Sidebar Brand Header */
 .sidebar-header {
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  height: 72px;
+  height: 64px;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -62,7 +63,11 @@
 .logo-text {
   font-weight: 700;
   font-size: 1.25rem;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--text-primary) 0%,
+    var(--text-secondary) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   opacity: 1;
@@ -76,28 +81,48 @@
 
 /* Sidebar Navigation Menu */
 .sidebar-menu {
-  flex: 1;
-  padding: 1.25rem 0.75rem;
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 0.75rem 0.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.2rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 0.85rem 1rem;
-  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
   cursor: pointer;
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   position: relative;
   transition: all 0.2s ease;
   white-space: nowrap;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .menu-item-icon {
@@ -137,7 +162,7 @@
 }
 
 .menu-item.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 15%;
@@ -149,12 +174,13 @@
 
 /* Sidebar Footer (Profile and Options) */
 .sidebar-footer {
-  padding: 1rem 0.75rem;
+  flex-shrink: 0;
+  padding: 0.75rem 0.65rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  background-color: rgba(var(--bg-sidebar), 0.4);
+  gap: 0.5rem;
+  background-color: var(--bg-sidebar);
 }
 
 .user-profile {
@@ -241,7 +267,8 @@
 
 /* Main Content Area */
 .main-content {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -342,7 +369,7 @@
   color: var(--text-primary);
 }
 
-.badge {
+.badge-dot {
   position: absolute;
   top: 2px;
   right: 2px;
@@ -351,6 +378,50 @@
   background-color: var(--accent-danger);
   border-radius: 50%;
   border: 1.5px solid var(--bg-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--bg-hover);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.badge-success {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: var(--accent-success);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.badge-danger {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: var(--accent-danger);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.badge-warning {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: var(--accent-warning);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.badge-primary {
+  background-color: rgba(99, 102, 241, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.badge-info {
+  background-color: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+  border-color: rgba(14, 165, 233, 0.25);
 }
 
 /* Page Container (Dynamic Panels) */
@@ -559,7 +630,8 @@
   align-items: center;
 }
 
-.select-filter, .input-search {
+.select-filter,
+.input-search {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-color);
   background-color: var(--bg-card);
@@ -571,7 +643,8 @@
   transition: all 0.2s ease;
 }
 
-.select-filter:focus, .input-search:focus {
+.select-filter:focus,
+.input-search:focus {
   border-color: var(--accent-primary);
 }
 
@@ -588,7 +661,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .btn-primary:hover {
@@ -803,7 +878,9 @@
 .chart-bar {
   fill: var(--accent-primary);
   rx: 4;
-  transition: fill 0.2s ease, opacity 0.2s ease;
+  transition:
+    fill 0.2s ease,
+    opacity 0.2s ease;
   cursor: pointer;
 }
 
@@ -904,8 +981,8 @@
   cursor: pointer;
 }
 
-
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.15);
 }
@@ -955,7 +1032,7 @@
   right: 0;
   bottom: 0;
   background-color: var(--border-color);
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 24px;
 }
 
@@ -967,7 +1044,7 @@
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .3s;
+  transition: 0.3s;
   border-radius: 50%;
 }
 
@@ -1003,30 +1080,33 @@ input:checked + .slider:before {
 .submenu-container {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding-left: 1.5rem;
+  gap: 0.15rem;
+  padding-left: 1.25rem;
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+  transition:
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease,
+    padding 0.25s ease;
 }
 
 .menu-item-group.expanded .submenu-container {
-  max-height: 350px; /* High enough to show all items */
+  max-height: 1200px; /* Expansão ampla para comportar todos os itens do submenu sem corte */
   opacity: 1;
-  padding-top: 0.25rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.4rem;
 }
 
 .submenu-item {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.85rem;
-  border-radius: 8px;
+  gap: 0.6rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
   cursor: pointer;
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
   text-decoration: none;
   background: none;
@@ -1063,4 +1143,3 @@ input:checked + .slider:before {
 .sidebar.collapsed .menu-arrow {
   display: none !important;
 }
-

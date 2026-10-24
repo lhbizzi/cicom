@@ -3,52 +3,14 @@ import Modal from "../../components/Modal";
 import Grid from "../../components/Grid";
 
 const INITIAL_EMPLOYEES = [
-  {
-    id: "FUNC-01",
-    name: "Carlos Eduardo Santos",
-    role: "Técnico de Oficina",
-    department: "Oficina - Ensaio Hidrostático",
-    cpf: "123.456.789-00",
-    phone: "(31) 99881-2233",
-    status: "Ativo",
-  },
-  {
-    id: "FUNC-02",
-    name: "Geraldo Magela de Oliveira",
-    role: "Técnico de Recarga",
-    department: "Oficina - Cargas CO2/PQS",
-    cpf: "234.567.890-11",
-    phone: "(31) 99772-4455",
-    status: "Ativo",
-  },
-  {
-    id: "FUNC-03",
-    name: "Juliana Maria Fonseca",
-    role: "Atendente de Recepção",
-    department: "Comercial / Atendimento",
-    cpf: "345.678.901-22",
-    phone: "(31) 3224-5566",
-    status: "Ativo",
-  },
-];
-
-const ROLES = [
-  "Técnico de Oficina",
-  "Técnico de Recarga",
-  "Inspetor de Qualidade Inmetro",
-  "Atendente de Recepção",
-  "Motorista / Coletor",
-  "Gerente Operacional",
+  { codigo: 1, nome: "Carlos Eduardo Santos" },
+  { codigo: 2, nome: "Geraldo Magela de Oliveira" },
+  { codigo: 3, nome: "Juliana Maria Fonseca" },
 ];
 
 const EMPTY_EMPLOYEE = {
-  id: "",
-  name: "",
-  role: "Técnico de Oficina",
-  department: "Oficina",
-  cpf: "",
-  phone: "",
-  status: "Ativo",
+  codigo: "",
+  nome: "",
 };
 
 export default function Funcionarios() {
@@ -57,30 +19,48 @@ export default function Funcionarios() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [formData, setFormData] = useState(EMPTY_EMPLOYEE);
+  const [editingCodigo, setEditingCodigo] = useState(null);
 
-  const deleteEmployee = (id) => {
-    if (window.confirm(`Confirma a exclusão do funcionário ${id}?`)) {
-      setEmployees(employees.filter((e) => e.id !== id));
+  const deleteEmployee = (codigo) => {
+    if (window.confirm(`Confirma a exclusão do funcionário de código ${codigo}?`)) {
+      setEmployees(employees.filter((e) => e.codigo !== codigo));
     }
   };
 
   const openAddModal = () => {
     setModalMode("add");
+    setEditingCodigo(null);
+    // Sugere sempre o último Id cadastrado mais 1 (ex: se foi 70, sugere 71)
+    const nextCodigo =
+      employees.length > 0
+        ? Math.max(...employees.map((e) => Number(e.codigo) || 0)) + 1
+        : 1;
     setFormData({
-      ...EMPTY_EMPLOYEE,
-      id: `FUNC-0${employees.length + 1}`,
+      codigo: nextCodigo,
+      nome: "",
     });
     setIsModalOpen(true);
   };
 
   const openEditModal = (item) => {
     setModalMode("edit");
+    setEditingCodigo(item.codigo);
     setFormData({ ...item });
     setIsModalOpen(true);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "codigo") {
+      // Aceita apenas números (remove qualquer letra ou caractere especial)
+      const numericOnly = value.replace(/\D/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        codigo: numericOnly,
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -89,74 +69,81 @@ export default function Funcionarios() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name.trim()) {
-      alert("Por favor, informe o nome do funcionário.");
+    if (formData.codigo === "" || formData.codigo === null || formData.codigo === undefined) {
+      alert("Por favor, informe o código do funcionário (apenas números).");
+      return;
+    }
+
+    const codNum = Number(formData.codigo);
+    if (isNaN(codNum) || codNum <= 0) {
+      alert("Por favor, informe um código numérico válido maior que zero.");
+      return;
+    }
+
+    if (!formData.nome.trim()) {
+      alert("Por favor, preencha o nome do funcionário.");
       return;
     }
 
     if (modalMode === "add") {
-      setEmployees([formData, ...employees]);
+      if (employees.some((e) => Number(e.codigo) === codNum)) {
+        alert(`Já existe um funcionário cadastrado com o código ${codNum}.`);
+        return;
+      }
+      setEmployees([...employees, { codigo: codNum, nome: formData.nome.trim() }]);
     } else {
-      setEmployees(employees.map((e) => (e.id === formData.id ? formData : e)));
+      // Se o código foi alterado na edição, valida se o novo código já existe em outro funcionário
+      if (
+        codNum !== editingCodigo &&
+        employees.some((e) => Number(e.codigo) === codNum)
+      ) {
+        alert(`Já existe outro funcionário cadastrado com o código ${codNum}.`);
+        return;
+      }
+
+      setEmployees(
+        employees.map((e) =>
+          e.codigo === editingCodigo
+            ? { codigo: codNum, nome: formData.nome.trim() }
+            : e
+        )
+      );
     }
     setIsModalOpen(false);
   };
 
-  const filteredData = employees.filter(
-    (item) =>
-      item.id.toLowerCase().includes(search.toLowerCase()) ||
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.role.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredData = employees.filter((item) => {
+    const q = search.toLowerCase();
+    return (
+      String(item.codigo).includes(q) ||
+      item.nome.toLowerCase().includes(q)
+    );
+  });
 
   const columns = [
     {
-      header: "Matrícula",
-      accessor: "id",
-      cellStyle: { fontWeight: 700, color: "var(--accent-primary)", width: "110px" },
+      header: "Código",
+      accessor: "codigo",
+      cellStyle: { fontWeight: 700, color: "var(--accent-primary)", width: "120px" },
+      render: (item) => <span>#{item.codigo}</span>,
     },
     {
-      header: "Nome Completo",
-      accessor: "name",
+      header: "Nome do Funcionário",
+      accessor: "nome",
       render: (item) => (
-        <div>
-          <div style={{ fontWeight: 600 }}>{item.name}</div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>CPF: {item.cpf || "-"}</div>
-        </div>
-      ),
-    },
-    {
-      header: "Cargo / Função",
-      accessor: "role",
-      render: (item) => <span style={{ fontWeight: 600 }}>{item.role}</span>,
-    },
-    {
-      header: "Setor / Departamento",
-      accessor: "department",
-    },
-    {
-      header: "Telefone",
-      accessor: "phone",
-    },
-    {
-      header: "Status",
-      accessor: "status",
-      render: (item) => (
-        <span className={item.status === "Ativo" ? "badge badge-success" : "badge"}>
-          {item.status === "Ativo" ? "🟢 Ativo" : "Inativo"}
-        </span>
+        <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{item.nome}</span>
       ),
     },
     {
       header: "Ações",
-      headerStyle: { width: "160px", textAlign: "right" },
+      headerStyle: { width: "150px", textAlign: "right" },
       cellStyle: { textAlign: "right" },
       render: (item) => (
         <div className="action-buttons" style={{ justifyContent: "flex-end" }}>
           <button className="btn-table-action" onClick={() => openEditModal(item)}>
             Editar
           </button>
-          <button className="btn-table-action delete" onClick={() => deleteEmployee(item.id)}>
+          <button className="btn-table-action delete" onClick={() => deleteEmployee(item.codigo)}>
             Excluir
           </button>
         </div>
@@ -166,132 +153,87 @@ export default function Funcionarios() {
 
   return (
     <div className="glass-panel">
+      {/* Control Bar */}
       <div className="control-bar" style={{ flexWrap: "wrap", gap: "1rem" }}>
         <div>
           <h4 style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            👤 Cadastro de Funcionários
+            👷 Cadastro de Funcionários
           </h4>
           <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-            Fichário de colaboradores, equipe de oficina e atendimento
+            Controle simplificado de códigos e nomes dos colaboradores da oficina e atendimento
           </span>
         </div>
 
         <div className="flex-gap">
           <input
             type="text"
-            placeholder="Pesquisar por Nome ou Cargo..."
+            placeholder="Pesquisar por Código ou Nome..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="input-search"
-            style={{ width: "250px" }}
+            style={{ width: "280px" }}
           />
           <button className="btn-primary" onClick={openAddModal}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            Incluir Funcionário
+            Novo Funcionário
           </button>
         </div>
       </div>
 
       <Grid data={filteredData} columns={columns} />
 
+      {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={modalMode === "add" ? "✨ Novo Funcionário" : `✏️ Editar Funcionário ${formData.id}`}
+        title={
+          modalMode === "add"
+            ? "✨ Cadastro de Novo Funcionário"
+            : `✏️ Editar Funcionário - Código ${formData.codigo}`
+        }
       >
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
+          <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "1rem" }}>
               <div className="form-group">
-                <label>Matrícula</label>
+                <label>Codigo:</label>
                 <input
                   type="text"
-                  name="id"
-                  value={formData.id}
-                  readOnly
-                  style={{ background: "var(--bg-hover)", cursor: "not-allowed", fontWeight: 700 }}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Nome Completo</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  name="codigo"
+                  value={formData.codigo}
                   onChange={handleInputChange}
-                  placeholder="Ex: Carlos Eduardo Santos"
+                  placeholder="Ex: 71"
                   required
-                  autoFocus
+                  style={{ fontWeight: 700 }}
+                  autoFocus={modalMode === "add"}
                 />
               </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
-              <div className="form-group">
-                <label>Cargo / Função</label>
-                <select name="role" value={formData.role} onChange={handleInputChange}>
-                  {ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
 
               <div className="form-group">
-                <label>Setor / Departamento</label>
+                <label>Nome:</label>
                 <input
                   type="text"
-                  name="department"
-                  value={formData.department}
+                  name="nome"
+                  value={formData.nome}
                   onChange={handleInputChange}
-                  placeholder="Ex: Oficina - Ensaio Hidrostático"
+                  placeholder="Nome do Funcionário"
+                  required
+                  autoFocus={modalMode === "edit"}
                 />
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "0.5rem" }}>
-              <div className="form-group">
-                <label>CPF</label>
-                <input
-                  type="text"
-                  name="cpf"
-                  value={formData.cpf}
-                  onChange={handleInputChange}
-                  placeholder="000.000.000-00"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Telefone</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="(31) 99999-8888"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Status</label>
-                <select name="status" value={formData.status} onChange={handleInputChange}>
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
               </div>
             </div>
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer" style={{ marginTop: "1.5rem" }}>
             <button
               type="button"
               className="btn-table-action"
-              style={{ padding: "0.5rem 1rem" }}
+              style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}
               onClick={() => setIsModalOpen(false)}
             >
               Cancelar

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const DYNAMIC_MENUS = [
   {
@@ -196,8 +196,14 @@ const DYNAMIC_MENUS = [
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            <path d="M15 6.5V3a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3.5"></path>
+            <rect x="8" y="9.5" width="8" height="12.5" rx="2"></rect>
+            <path d="M6 13h2"></path>
+            <path d="M8 6h8"></path>
+            <path d="M16 6l3 2v4"></path>
           </svg>
         ),
         route: "/cadastros/extintores",
@@ -468,6 +474,29 @@ export default function Sidebar({
     estoque: false,
     utilitarios: false,
   });
+
+  // Auto expand parent module if current route belongs to it
+  useEffect(() => {
+    DYNAMIC_MENUS.forEach((menu) => {
+      if (menu.children && menu.children.some((child) => child.route === currentRoute)) {
+        setExpandedMenus((prev) => {
+          if (prev[menu.id]) return prev;
+          return { ...prev, [menu.id]: true };
+        });
+      }
+    });
+  }, [currentRoute]);
+
+  // Ensure active menu item is scrolled into view if needed
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const activeEl = document.querySelector(".submenu-item.active");
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [currentRoute]);
 
   const toggleAccordion = (menuId) => {
     if (collapsed) {
